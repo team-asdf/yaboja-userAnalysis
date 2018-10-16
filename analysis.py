@@ -54,7 +54,7 @@ def print_dic(lst):
 if __name__ == "__main__":
     import time
     start = time.time()
-    s = Analysis("seongjoojin")
+    s = Analysis("jen6")
     pool = Pool(processes=4)
     temp = pool.map(s.analyze, s.url)
     # print(temp)
