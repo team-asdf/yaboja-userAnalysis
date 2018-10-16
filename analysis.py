@@ -1,26 +1,27 @@
 from bs4 import BeautifulSoup
 import requests
+from multiprocessing import Pool
 
 
 class Analysis:
     def __init__(self, username):
-        self.repo = "https://github.com/" + username + "?tab=repositories"
-        self.star = "https://github.com/" + username + "?tab=stars"
+        self.url = ["https://github.com/" + username + "?tab=repositories", "https://github.com/" + username + "?tab=stars"]
+        # self.repo = "https://github.com/" + username + "?tab=repositories"
+        # self.star = "https://github.com/" + username + "?tab=stars"
+        self.language_dic = {}
 
-    def analyze(self):
-        language_dic = {}
-        # Repository
-        req = requests.get(self.repo)
+    def analyze(self, main_url):
+        req = requests.get(main_url)
         while True:
             html = req.text
             soup = BeautifulSoup(html, 'html.parser')
             languages = soup.find_all("span", {"itemprop": "programmingLanguage"})
             for each in list(languages):
                 language = each.text.lstrip().rstrip()
-                if language not in language_dic:
-                    language_dic[language] = 1
+                if language not in self.language_dic:
+                    self.language_dic[language] = 1
                 else:
-                    language_dic[language] += 1
+                    self.language_dic[language] += 1
             if soup.find("span", {"class": "disabled"}) is None:
                 print("Next Page")
                 url = str(soup.find("a", string="Next")).split("href=\"")[1].split("\" rel")[0]
@@ -32,35 +33,17 @@ class Analysis:
                 print("Next Page")
                 url = str(soup.find("a", string="Next")).split("href=\"")[1].split("\" rel")[0]
                 req = requests.get(url)
+        return self.language_dic
 
-        # Star
-        req = requests.get(self.star)
-        while True:
-            html = req.text
-            soup = BeautifulSoup(html, 'html.parser')
-            languages = soup.find_all("span", {"itemprop": "programmingLanguage"})
-            for each in list(languages):
-                language = each.text.lstrip().rstrip()
-                if language not in language_dic:
-                    language_dic[language] = 1
-                else:
-                    language_dic[language] += 1
-            if soup.find("span", {"class": "disabled"}) is None:
-                print("Next Page")
-                url = str(soup.find("a", string="Next")).split("href=\"")[1].split("\" rel")[0]
-                req = requests.get(url)
-            elif soup.find("span", {"class": "disabled"}).text == "Next":
-                print("Last Page")
-                break
-            else:
-                print("Next Page")
-                url = str(soup.find("a", string="Next")).split("href=\"")[1].split("\" rel")[0]
-                req = requests.get(url)
 
-        print(language_dic)
-        print(sorted(language_dic, key=language_dic.get, reverse=True))
+def print_dic(dic):
+    sorted_dic = sorted(dic, key=dic.get, reverse=True)
+    for i in range(len(sorted_dic)):
+        print(str(i + 1) + ":", sorted_dic[i])
 
 
 if __name__ == "__main__":
-    s = Analysis("jen6")
-    s.analyze()
+    s = Analysis("noirbizarre")
+    pool = Pool(processes=4)
+    temp = pool.map(s.analyze, s.url)
+    print_dic(temp[0])
