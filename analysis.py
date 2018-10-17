@@ -5,7 +5,9 @@ from multiprocessing import Pool
 
 class Analysis:
     def __init__(self, username):
-        self.url = ["https://github.com/" + username + "?tab=repositories", "https://github.com/" + username + "?tab=stars"]
+        self.url = ["https://github.com/" + username + "?tab=repositories",
+                    "https://github.com/" + username + "?tab=stars"]
+        self.username = username
         # self.repo = "https://github.com/" + username + "?tab=repositories"
         # self.star = "https://github.com/" + username + "?tab=stars"
         self.language_dic = {}
@@ -52,11 +54,8 @@ def print_dic(lst):
 
 
 if __name__ == "__main__":
-    import time
-    start = time.time()
     s = Analysis("jen6")
     pool = Pool(processes=4)
     temp = pool.map(s.analyze, s.url)
-    # print(temp)
+    print("User:", s.username)
     print_dic(temp)
-    print(time.time() - start)
