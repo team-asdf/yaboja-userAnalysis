@@ -7,7 +7,6 @@ class Analysis:
     def __init__(self, username):
         self.url = ["https://github.com/" + username + "?tab=repositories",
                     "https://github.com/" + username + "?tab=stars"]
-        self.username = username
         # self.repo = "https://github.com/" + username + "?tab=repositories"
         # self.star = "https://github.com/" + username + "?tab=stars"
         self.language_dic = {}
@@ -31,10 +30,10 @@ class Analysis:
                 if each is not None and each.text == "Next":
                     no_next = False
             if no_next:
-                print("Last Page")
+                # print("Last Page")
                 break
             else:
-                print("Next Page")
+                # print("Next Page")
                 url = str(soup.find("a", string="Next")).split("href=\"")[1].split("\" rel")[0]
                 req = requests.get(url)
         return self.language_dic
@@ -54,8 +53,8 @@ def print_dic(lst):
 
 
 if __name__ == "__main__":
-    s = Analysis("jen6")
+    name = input("Username: ")
+    s = Analysis(name)
     pool = Pool(processes=4)
     temp = pool.map(s.analyze, s.url)
-    print("User:", s.username)
     print_dic(temp)
