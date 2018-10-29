@@ -1,4 +1,5 @@
 from github import Github
+import time
 
 
 class Analysis:
@@ -29,11 +30,15 @@ class Analysis:
 
     def main(self):
         self.analysis()
-        return self.lang_dic
+        languages = sorted(self.lang_dic, key=self.lang_dic.get, reverse=True)
+        return languages
 
 
 if __name__ == "__main__":
+    start = time.time()
     name = input("Username: ")
     s = Analysis(name)
     dic = s.main()
+    print(s.lang_dic)
     print(dic)
+    print(time.time() - start)
