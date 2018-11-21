@@ -8,6 +8,7 @@ class Analysis:
         token = f.readline().rstrip()
         github = Github(token)
         f.close()
+        self.user_text = open("./users/" + username, 'w')
         self.user = github.get_user(username)
         self.lang_dic = {}
 
@@ -31,6 +32,13 @@ class Analysis:
     def main(self):
         self.analysis()
         languages = sorted(self.lang_dic, key=self.lang_dic.get, reverse=True)
+        lang_str = ""
+        for i in range(len(languages)):
+            lang_str += languages[i]
+            if i != len(languages) - 1:
+                lang_str += ","
+        self.user_text.write(lang_str)
+        self.user_text.close()
         return languages
 
 
