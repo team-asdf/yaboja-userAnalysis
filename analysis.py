@@ -1,5 +1,6 @@
 from github import Github
 import time
+import sys
 import requests
 
 
@@ -56,7 +57,10 @@ class Analysis:
 
 if __name__ == "__main__":
     start = time.time()
-    name = input()
+    if len(sys.argv) == 2:
+        name = sys.argv[1]
+    else:
+        name = input()
     s = Analysis(name)
     dic = s.main()
     # print(s.lang_dic)
