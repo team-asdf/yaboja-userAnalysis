@@ -1,5 +1,6 @@
 from github import Github
 import time
+import requests
 
 
 class Analysis:
@@ -8,6 +9,7 @@ class Analysis:
         token = f.readline().rstrip()
         github = Github(token)
         f.close()
+        self.username = username
         self.user_text = open("./users/" + username, 'w')
         self.user = github.get_user(username)
         self.lang_dic = {}
@@ -33,10 +35,20 @@ class Analysis:
         self.analysis()
         languages = sorted(self.lang_dic, key=self.lang_dic.get, reverse=True)
         lang_str = ""
-        for i in range(len(languages)):
+        for i in range(3):
             lang_str += languages[i]
-            if i != len(languages) - 1:
+            if i != 2:
                 lang_str += ","
+        headers = {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        }
+        data = {
+            'userid': self.username,
+            'extract_language': lang_str,
+            'keyword': ''
+        }
+        response = requests.post('http://angelbeats.tk:3000/api/v1/signup', headers=headers, data=data)
+        print(response.status_code, response.reason)
         self.user_text.write(lang_str)
         self.user_text.close()
         return languages
