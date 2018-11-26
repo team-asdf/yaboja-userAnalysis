@@ -48,7 +48,7 @@ class Analysis:
             'keyword': ''
         }
         response = requests.post('http://angelbeats.tk:3000/api/v1/signup', headers=headers, data=data)
-        print(response.status_code, response.reason)
+        # print(response.status_code, response.reason)
         self.user_text.write(lang_str)
         self.user_text.close()
         return languages
@@ -56,9 +56,9 @@ class Analysis:
 
 if __name__ == "__main__":
     start = time.time()
-    name = input("Username: ")
+    name = input()
     s = Analysis(name)
     dic = s.main()
-    print(s.lang_dic)
-    print(dic)
-    print(time.time() - start)
+    # print(s.lang_dic)
+    # print(dic)
+    # print(time.time() - start)
