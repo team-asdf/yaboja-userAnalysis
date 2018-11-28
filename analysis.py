@@ -65,4 +65,4 @@ if __name__ == "__main__":
     dic = s.main()
     # print(s.lang_dic)
     # print(dic)
-    # print(time.time() - start)
+    print("Elapsed Time:", time.time() - start)
