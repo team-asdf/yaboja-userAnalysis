@@ -9,7 +9,7 @@
 #### Requirements install
 
 ```shell
-pip3 install requests pygithub
+pip3 install -r requirements.txt
 ```
 
 
