@@ -11,7 +11,7 @@ class Analysis:
         github = Github(token)
         f.close()
         self.username = username
-        self.user_text = open("./users/" + username, 'w')
+        # self.user_text = open("./users/" + username, 'w')
         self.user = github.get_user(username)
         self.lang_dic = {}
 
@@ -50,8 +50,8 @@ class Analysis:
         }
         response = requests.post('http://angelbeats.tk:3000/api/v1/signup', headers=headers, data=data)
         # print(response.status_code, response.reason)
-        self.user_text.write(lang_str)
-        self.user_text.close()
+        # self.user_text.write(lang_str)
+        # self.user_text.close()
         return languages
 
 
