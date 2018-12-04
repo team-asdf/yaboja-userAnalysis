@@ -36,10 +36,15 @@ class Analysis:
         self.analysis()
         languages = sorted(self.lang_dic, key=self.lang_dic.get, reverse=True)
         lang_str = ""
-        for i in range(3):
-            lang_str += languages[i]
-            if i != 2:
-                lang_str += ","
+        try:
+            for i in range(3):
+                lang_str += languages[i]
+                if i != 2:
+                    lang_str += ","
+        except IndexError:
+            pass
+        if lang_str[-1] == ",":
+            lang_str = lang_str[:-1]
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
         }
@@ -48,6 +53,7 @@ class Analysis:
             'extract_language': lang_str,
             'keyword': ''
         }
+        print(lang_str)
         response = requests.post('http://angelbeats.tk:3000/api/v1/signup', headers=headers, data=data)
         # print(response.status_code, response.reason)
         # self.user_text.write(lang_str)
@@ -64,5 +70,5 @@ if __name__ == "__main__":
     s = Analysis(name)
     dic = s.main()
     # print(s.lang_dic)
-    # print(dic)
+    print(dic)
     print("Elapsed Time:", time.time() - start)
