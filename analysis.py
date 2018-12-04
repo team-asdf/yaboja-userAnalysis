@@ -19,7 +19,9 @@ class Analysis:
         # Get Repos
         for each in self.user.get_repos():
             if each.language is not None:
-                if each.language not in self.lang_dic:
+                if each.language == "C":
+                    pass
+                elif each.language not in self.lang_dic:
                     self.lang_dic[each.language] = 1
                 else:
                     self.lang_dic[each.language] += 1
@@ -27,7 +29,9 @@ class Analysis:
         # Get Starred
         for each in self.user.get_starred():
             if each.language is not None:
-                if each.language not in self.lang_dic:
+                if each.language == "C":
+                    pass
+                elif each.language not in self.lang_dic:
                     self.lang_dic[each.language] = 1
                 else:
                     self.lang_dic[each.language] += 1
