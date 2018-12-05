@@ -22,7 +22,7 @@ class Analysis:
         self.user = self.github.get_user(username)
         self.lang_dic = {}
 
-    @timeout
+    @timeout(30)
     def analysis(self):
         # Get Repos
         for each in self.user.get_repos():
