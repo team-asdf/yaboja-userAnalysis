@@ -8,17 +8,22 @@ class Analysis:
     def __init__(self, username):
         f = open("/Users/ghyeon/Documents/token/token")
         token = f.readline().rstrip()
-        github = Github(token)
+        self.github = Github(token)
         f.close()
         self.username = username
         # self.user_text = open("./users/" + username, 'w')
-        self.user = github.get_user(username)
+        self.user = self.github.get_user(username)
         self.lang_dic = {}
 
     def analysis(self):
+        start = time.time()
+        print(start)
         # Get Repos
         for each in self.user.get_repos():
+            if time.time() - start >= 30:
+                return
             if each.language is not None:
+                print("Repo:", each.language)
                 if each.language == "C":
                     pass
                 elif each.language not in self.lang_dic:
@@ -28,6 +33,9 @@ class Analysis:
 
         # Get Starred
         for each in self.user.get_starred():
+            print("Star:", each.language)
+            if time.time() - start >= 30:
+                return
             if each.language is not None:
                 if each.language == "C":
                     pass
@@ -35,6 +43,29 @@ class Analysis:
                     self.lang_dic[each.language] = 1
                 else:
                     self.lang_dic[each.language] += 1
+
+        # Get Following
+        following = []
+        for each in self.user.get_following():
+            following.append(self.parse_id(str(each)))
+
+        for username in following:
+            temp_user = self.github.get_user(username)
+            for each in temp_user.get_repos():
+                print("Follow:", each.language)
+                if time.time() - start >= 30:
+                    return
+                if each.language is not None:
+                    if each.language == "C":
+                        pass
+                    elif each.language not in self.lang_dic:
+                        self.lang_dic[each.language] = 1
+                    else:
+                        self.lang_dic[each.language] += 1
+
+    def parse_id(self, data):
+        data = data.split("login=\"")[1].split("\")")[0]
+        return data
 
     def main(self):
         self.analysis()
@@ -74,5 +105,4 @@ if __name__ == "__main__":
     s = Analysis(name)
     dic = s.main()
     # print(s.lang_dic)
-    print(dic)
     print("Elapsed Time:", time.time() - start)
