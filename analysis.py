@@ -2,7 +2,9 @@ from github import Github
 import time
 from threading import Thread, Event
 import sys
+import os
 import requests
+from timeout import timeout
 
 
 stop_event = Event()
@@ -14,18 +16,20 @@ class Analysis:
         token = f.readline().rstrip()
         self.github = Github(token)
         f.close()
+        print(self.github.get_rate_limit())
         self.username = username
         # self.user_text = open("./users/" + username, 'w')
         self.user = self.github.get_user(username)
         self.lang_dic = {}
 
+    @timeout
     def analysis(self):
         # Get Repos
         for each in self.user.get_repos():
             if each.language is not None:
                 if stop_event.is_set():
-                    return
-                print("Repo:", each.language)
+                    break
+                # print("Repo:", each.language)
                 if each.language == "C":
                     pass
                 elif each.language not in self.lang_dic:
@@ -36,8 +40,8 @@ class Analysis:
         # Get Starred
         for each in self.user.get_starred():
             if stop_event.is_set():
-                return
-            print("Star:", each.language)
+                break
+            # print("Star:", each.language)
             if each.language is not None:
                 if each.language == "C":
                     pass
@@ -51,16 +55,18 @@ class Analysis:
         for each in self.user.get_following():
             following.append(self.parse_id(str(each)))
 
-        idx = 1
+        # idx = 1
 
         for username in following:
-            print(username)
+            if stop_event.is_set():
+                break
+            # print(username)
             temp_user = self.github.get_user(username)
             for each in temp_user.get_repos():
                 if stop_event.is_set():
-                    return
-                print(str(idx), "Follow:", each.language)
-                idx += 1
+                    break
+                # print(str(idx), "Follow:", each.language)
+                # idx += 1
                 if each.language is not None:
                     if each.language == "C":
                         pass
@@ -74,11 +80,11 @@ class Analysis:
         return data
 
     def main(self):
-        action = Thread(target=self.analysis)
-        action.start()
-        action.join(timeout=30)
-        stop_event.set()
-        print(1)
+        try:
+            self.analysis()
+        except:
+            print(self.lang_dic)
+        # print(1)
         languages = sorted(self.lang_dic, key=self.lang_dic.get, reverse=True)
         lang_str = ""
         try:
@@ -106,7 +112,6 @@ class Analysis:
         print(response.status_code, response.reason)
         # self.user_text.write(lang_str)
         # self.user_text.close()
-        return languages
 
 
 if __name__ == "__main__":
@@ -116,6 +121,5 @@ if __name__ == "__main__":
     else:
         name = input()
     s = Analysis(name)
-    dic = s.main()
-    print(s.lang_dic)
+    s.main()
     print("Elapsed Time:", time.time() - start)
