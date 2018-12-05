@@ -27,9 +27,9 @@ class Analysis:
                 if each.language == "C":
                     pass
                 elif each.language not in self.lang_dic:
-                    self.lang_dic[each.language] = 1
+                    self.lang_dic[each.language] = 2.5
                 else:
-                    self.lang_dic[each.language] += 1
+                    self.lang_dic[each.language] += 2.5
 
         # Get Starred
         for each in self.user.get_starred():
@@ -40,9 +40,9 @@ class Analysis:
                 if each.language == "C":
                     pass
                 elif each.language not in self.lang_dic:
-                    self.lang_dic[each.language] = 1
+                    self.lang_dic[each.language] = 1.5
                 else:
-                    self.lang_dic[each.language] += 1
+                    self.lang_dic[each.language] += 1.5
 
         # Get Following
         following = []
@@ -59,9 +59,9 @@ class Analysis:
                     if each.language == "C":
                         pass
                     elif each.language not in self.lang_dic:
-                        self.lang_dic[each.language] = 1
+                        self.lang_dic[each.language] = 0.5
                     else:
-                        self.lang_dic[each.language] += 1
+                        self.lang_dic[each.language] += 0.5
 
     def parse_id(self, data):
         data = data.split("login=\"")[1].split("\")")[0]
@@ -78,8 +78,11 @@ class Analysis:
                     lang_str += ","
         except IndexError:
             pass
-        if lang_str[-1] == ",":
-            lang_str = lang_str[:-1]
+        try:
+            if lang_str[-1] == ",":
+                lang_str = lang_str[:-1]
+        except IndexError:
+            pass
         headers = {
             'Content-Type': 'application/x-www-form-urlencoded',
         }
@@ -104,5 +107,5 @@ if __name__ == "__main__":
         name = input()
     s = Analysis(name)
     dic = s.main()
-    # print(s.lang_dic)
+    print(s.lang_dic)
     print("Elapsed Time:", time.time() - start)
