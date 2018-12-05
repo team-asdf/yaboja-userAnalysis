@@ -1,7 +1,11 @@
 from github import Github
 import time
+from threading import Thread, Event
 import sys
 import requests
+
+
+stop_event = Event()
 
 
 class Analysis:
@@ -16,13 +20,11 @@ class Analysis:
         self.lang_dic = {}
 
     def analysis(self):
-        start = time.time()
-        print(start)
         # Get Repos
         for each in self.user.get_repos():
-            if time.time() - start >= 30:
-                return
             if each.language is not None:
+                if stop_event.is_set():
+                    return
                 print("Repo:", each.language)
                 if each.language == "C":
                     pass
@@ -33,9 +35,9 @@ class Analysis:
 
         # Get Starred
         for each in self.user.get_starred():
-            print("Star:", each.language)
-            if time.time() - start >= 30:
+            if stop_event.is_set():
                 return
+            print("Star:", each.language)
             if each.language is not None:
                 if each.language == "C":
                     pass
@@ -49,12 +51,16 @@ class Analysis:
         for each in self.user.get_following():
             following.append(self.parse_id(str(each)))
 
+        idx = 1
+
         for username in following:
+            print(username)
             temp_user = self.github.get_user(username)
             for each in temp_user.get_repos():
-                print("Follow:", each.language)
-                if time.time() - start >= 30:
+                if stop_event.is_set():
                     return
+                print(str(idx), "Follow:", each.language)
+                idx += 1
                 if each.language is not None:
                     if each.language == "C":
                         pass
@@ -68,7 +74,11 @@ class Analysis:
         return data
 
     def main(self):
-        self.analysis()
+        action = Thread(target=self.analysis)
+        action.start()
+        action.join(timeout=30)
+        stop_event.set()
+        print(1)
         languages = sorted(self.lang_dic, key=self.lang_dic.get, reverse=True)
         lang_str = ""
         try:
@@ -93,7 +103,7 @@ class Analysis:
         }
         print(lang_str)
         response = requests.post('http://angelbeats.tk:3000/api/v1/signup', headers=headers, data=data)
-        # print(response.status_code, response.reason)
+        print(response.status_code, response.reason)
         # self.user_text.write(lang_str)
         # self.user_text.close()
         return languages
